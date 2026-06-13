@@ -48,6 +48,66 @@
     </div>
   </main>
 
+  <!-- Écran lecteur (détail + marque-page) -->
+  <div id="player" class="player hidden">
+    <div class="player-bg" id="playerBg"></div>
+    <div class="player-scrim"></div>
+    <button id="playerBack" class="player-back">‹ Retour</button>
+    <div class="player-content">
+      <div class="player-head">
+        <div class="player-poster" id="playerPoster"></div>
+        <div class="player-headinfo">
+          <span class="player-type" id="playerType"></span>
+          <h2 id="playerTitle"></h2>
+          <div class="player-tags" id="playerTags"></div>
+        </div>
+      </div>
+
+      <div class="player-resume" id="playerResume">
+        <span class="pr-label">Reprise</span>
+        <span class="pr-value" id="playerResumeText">—</span>
+      </div>
+
+      <div class="player-controls">
+        <div class="seriesctrl" id="seriesCtrl">
+          <div class="stepper">
+            <span class="step-label">Saison</span>
+            <div class="step-row">
+              <button class="step-btn" data-step="season" data-d="-1">−</button>
+              <span class="step-val" id="valSeason">0</span>
+              <button class="step-btn" data-step="season" data-d="1">+</button>
+            </div>
+          </div>
+          <div class="stepper">
+            <span class="step-label">Épisode</span>
+            <div class="step-row">
+              <button class="step-btn" data-step="episode" data-d="-1">−</button>
+              <span class="step-val" id="valEpisode">0</span>
+              <button class="step-btn" data-step="episode" data-d="1">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="timectrl">
+          <div class="time-display">
+            <span id="valTime">00:00</span>
+          </div>
+          <label class="slider-label">Minutes <span id="minOut">0</span>
+            <input id="sliderMin" type="range" min="0" max="180" value="0">
+          </label>
+          <label class="slider-label">Secondes <span id="secOut">0</span>
+            <input id="sliderSec" type="range" min="0" max="59" value="0">
+          </label>
+        </div>
+
+        <div class="player-actions">
+          <button id="markWatching" class="btn-primary">▶ Marquer « En cours »</button>
+          <button id="editFromPlayer" class="btn-ghost">Modifier la fiche</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal édition / ajout -->
   <div id="modal" class="modal hidden">
     <div class="modal-card">

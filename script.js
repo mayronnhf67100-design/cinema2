@@ -24,6 +24,9 @@ const continueSection = $('continueSection');
 const continueRow = $('continueRow');
 const modal = $('modal');
 const progressBlock = $('progressBlock');
+const player = $('player');
+let playerId = null;
+let draft = null; // copie de travail de la progression dans le lecteur
 
 /* ---- Helpers ---- */
 const STATUS_LABEL = { towatch:'À regarder', watching:'En cours', done:'Terminé' };
@@ -193,7 +196,94 @@ function deleteItem(){
   }
 }
 
-/* ---- Events ---- */
+/* ---- Player (écran de reprise) ---- */
+function openPlayer(id){
+  const it = items.find(x=>x.id===id);
+  if(!it) return;
+  playerId = id;
+  draft = { season:it.season||0, episode:it.episode||0, min:it.min||0, sec:it.sec||0 };
+
+  $('playerType').textContent = TYPE_LABEL[it.type];
+  $('playerTitle').textContent = it.title;
+
+  // fond + poster
+  const bg = $('playerBg');
+  if(it.poster){
+    bg.style.backgroundImage = `url("${it.poster}")`;
+    $('playerPoster').style.backgroundImage = `url("${it.poster}")`;
+    $('playerPoster').textContent = '';
+  } else {
+    bg.style.backgroundImage = 'linear-gradient(135deg,#2a2a34,#141419)';
+    $('playerPoster').style.backgroundImage = 'none';
+    $('playerPoster').textContent = it.type==='series'?'📺':'🎬';
+  }
+
+  // tags
+  const tags = [`<span class="tag">${STATUS_LABEL[it.status]}</span>`];
+  if(it.rating!=null && it.rating!=='' && !isNaN(it.rating)) tags.push(`<span class="tag gold">★ ${it.rating}/10</span>`);
+  if(it.favorite) tags.push(`<span class="tag gold">⭐ Favori</span>`);
+  $('playerTags').innerHTML = tags.join('');
+
+  // saison/épisode visibles seulement pour les séries
+  $('seriesCtrl').classList.toggle('hidden', it.type!=='series');
+
+  syncPlayerControls();
+  player.classList.remove('hidden');
+  document.body.style.overflow='hidden';
+}
+
+function syncPlayerControls(){
+  $('valSeason').textContent = draft.season;
+  $('valEpisode').textContent = draft.episode;
+  $('sliderMin').value = draft.min;
+  $('sliderSec').value = draft.sec;
+  $('minOut').textContent = draft.min;
+  $('secOut').textContent = draft.sec;
+  $('valTime').textContent = `${pad(draft.min)}:${pad(draft.sec)}`;
+  const it = items.find(x=>x.id===playerId);
+  const txt = it && it.type==='series'
+    ? `S${pad(draft.season)}E${pad(draft.episode)} — ${pad(draft.min)}:${pad(draft.sec)}`
+    : `${pad(draft.min)}:${pad(draft.sec)}`;
+  $('playerResumeText').textContent = txt;
+}
+
+function persistDraft(setWatching){
+  const i = items.findIndex(x=>x.id===playerId);
+  if(i<0) return;
+  items[i] = {...items[i], ...draft};
+  if(setWatching) items[i].status = 'watching';
+  save();
+  render();
+}
+
+function closePlayer(){
+  player.classList.add('hidden');
+  document.body.style.overflow='';
+  playerId = null; draft = null;
+}
+
+// steppers saison/épisode
+$('seriesCtrl').addEventListener('click', e=>{
+  const btn = e.target.closest('.step-btn');
+  if(!btn) return;
+  const key = btn.dataset.step;
+  const d = parseInt(btn.dataset.d);
+  draft[key] = Math.max(0, (draft[key]||0)+d);
+  syncPlayerControls();
+  persistDraft(false);
+});
+
+// sliders temps
+$('sliderMin').addEventListener('input', e=>{ draft.min = parseInt(e.target.value)||0; syncPlayerControls(); });
+$('sliderSec').addEventListener('input', e=>{ draft.sec = parseInt(e.target.value)||0; syncPlayerControls(); });
+$('sliderMin').addEventListener('change', ()=>persistDraft(false));
+$('sliderSec').addEventListener('change', ()=>persistDraft(false));
+
+$('markWatching').addEventListener('click', ()=>{ persistDraft(true); closePlayer(); });
+$('playerBack').addEventListener('click', closePlayer);
+$('editFromPlayer').addEventListener('click', ()=>{ const id=playerId; closePlayer(); openModal(id); });
+
+
 $('addBtn').addEventListener('click', ()=>openModal());
 $('closeModal').addEventListener('click', closeModal);
 $('saveBtn').addEventListener('click', saveItem);
@@ -216,11 +306,14 @@ $('filters').addEventListener('click', e=>{
 
 document.addEventListener('click', e=>{
   const card = e.target.closest('.card, .continue-card');
-  if(card && card.dataset.id) openModal(card.dataset.id);
+  if(card && card.dataset.id) openPlayer(card.dataset.id);
 });
 
 document.addEventListener('keydown', e=>{
-  if(e.key==='Escape' && !modal.classList.contains('hidden')) closeModal();
+  if(e.key==='Escape'){
+    if(!modal.classList.contains('hidden')) closeModal();
+    else if(!player.classList.contains('hidden')) closePlayer();
+  }
 });
 
 /* ---- Init ---- */
