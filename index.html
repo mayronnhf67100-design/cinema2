@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0f">
+  <title>Maflix — Mes films & séries</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">◆</span>
+      <h1>Maflix</h1>
+    </div>
+    <button id="addBtn" class="btn-primary">+ Ajouter</button>
+  </header>
+
+  <div class="search-wrap">
+    <input id="search" type="search" placeholder="Rechercher un titre…" autocomplete="off">
+  </div>
+
+  <nav class="filters" id="filters">
+    <button class="chip active" data-filter="all">Tout</button>
+    <button class="chip" data-filter="movie">Films</button>
+    <button class="chip" data-filter="series">Séries</button>
+    <button class="chip" data-filter="favorite">Favoris</button>
+    <button class="chip" data-filter="towatch">À regarder</button>
+    <button class="chip" data-filter="watching">En cours</button>
+    <button class="chip" data-filter="done">Terminés</button>
+  </nav>
+
+  <section id="continueSection" class="continue-section hidden">
+    <h2 class="section-title">Continuer à regarder</h2>
+    <div id="continueRow" class="continue-row"></div>
+  </section>
+
+  <main>
+    <div id="grid" class="grid"></div>
+    <div id="empty" class="empty hidden">
+      <p>Aucun contenu pour l'instant.</p>
+      <p class="muted">Appuie sur « + Ajouter » pour commencer.</p>
+    </div>
+  </main>
+
+  <!-- Modal édition / ajout -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="modalTitle">Ajouter</h2>
+        <button id="closeModal" class="icon-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <label>Titre
+          <input id="f-title" type="text" placeholder="Ex : Shameless">
+        </label>
+
+        <label>Type
+          <select id="f-type">
+            <option value="movie">Film</option>
+            <option value="series">Série</option>
+          </select>
+        </label>
+
+        <label>Statut
+          <select id="f-status">
+            <option value="towatch">À regarder</option>
+            <option value="watching">En cours</option>
+            <option value="done">Terminé</option>
+          </select>
+        </label>
+
+        <label>Affiche (URL d'image, optionnel)
+          <input id="f-poster" type="url" placeholder="https://…">
+        </label>
+
+        <div class="rating-field">
+          <span>Note</span>
+          <div class="rating-input">
+            <input id="f-rating" type="number" min="0" max="10" step="0.5" placeholder="—">
+            <span class="rating-suffix">/ 10</span>
+          </div>
+        </div>
+
+        <label>Commentaire personnel
+          <textarea id="f-comment" rows="3" placeholder="Ce que tu en as pensé…"></textarea>
+        </label>
+
+        <label class="check-row">
+          <input id="f-favorite" type="checkbox">
+          <span>Favori ⭐</span>
+        </label>
+
+        <div id="progressBlock" class="progress-block hidden">
+          <h3>Marque-page (Continuer à regarder)</h3>
+          <div class="progress-grid">
+            <label>Saison
+              <input id="f-season" type="number" min="0" placeholder="2">
+            </label>
+            <label>Épisode
+              <input id="f-episode" type="number" min="0" placeholder="1">
+            </label>
+            <label>Minutes
+              <input id="f-min" type="number" min="0" placeholder="23">
+            </label>
+            <label>Secondes
+              <input id="f-sec" type="number" min="0" max="59" placeholder="40">
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button id="deleteBtn" class="btn-danger hidden">Supprimer</button>
+        <button id="saveBtn" class="btn-primary">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
